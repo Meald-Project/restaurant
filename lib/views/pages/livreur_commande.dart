@@ -3,21 +3,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../cubit/commande/commande_cubit.dart';
 
-class NotificationScreen extends StatefulWidget {
-  const NotificationScreen({Key? key}) : super(key: key);
+class LivreurCommandePage extends StatefulWidget {
+  const LivreurCommandePage({Key? key}) : super(key: key);
 
   @override
-  _NotificationScreenState createState() => _NotificationScreenState();
+  _LivreurCommandePageState createState() => _LivreurCommandePageState();
 }
 
-class _NotificationScreenState extends State<NotificationScreen> {
-  String _selectedCategory = 'Comming'; // Default to 'Comming'
+class _LivreurCommandePageState extends State<LivreurCommandePage> {
+  String _selectedCategory = 'On The Way'; // Default to 'Comming'
 
   @override
   void initState() {
     super.initState();
     // Fetch commandes with status 0 initially
-    BlocProvider.of<CommandeCubit>(context).fetchCommandesWithStatusZero(0);
+    BlocProvider.of<CommandeCubit>(context).fetchCommandesWithStatusZero(3);
   }
 
   void _onCategoryTap(String category) {
@@ -26,12 +26,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
     });
 
     // Trigger the fetch based on the category
-    if (category == 'Comming') {
-      BlocProvider.of<CommandeCubit>(context).fetchCommandesWithStatusZero(0);
-    } else if (category == 'in process') {
-      BlocProvider.of<CommandeCubit>(context).fetchCommandesWithStatusZero(1);
-    } else if (category == 'done') {
-      BlocProvider.of<CommandeCubit>(context).fetchCommandesWithStatusZero(2);
+    if (category == 'On The Way') {
+      BlocProvider.of<CommandeCubit>(context).fetchCommandesWithStatusZero(3);
+    } else if (category == 'Arrived') {
+      BlocProvider.of<CommandeCubit>(context).fetchCommandesWithStatusZero(4);
     }
   }
 
@@ -57,12 +55,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
   double _selectedCategoryPosition(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     switch (_selectedCategory) {
-      case 'Comming':
+      case 'On The Way':
         return 0;
-      case 'in process':
-        return width / 3; // Adjusted for three items
-      case 'done':
-        return 2 * width / 3; // Adjusted for three items
+      case 'Arrived':
+        return width / 2; // Adjusted for three items
+
       default:
         return 0;
     }
@@ -74,7 +71,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: Text("Notification"),
+        title: Text("Livreur"),
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 15.0),
@@ -84,9 +81,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildCategoryItem('Comming'),
-                _buildCategoryItem('in process'),
-                _buildCategoryItem('done'),
+                _buildCategoryItem('On The Way'),
+                _buildCategoryItem('Arrived'),
               ],
             ),
             SizedBox(
@@ -106,7 +102,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     child: Container(
                       height: 2,
                       width: MediaQuery.of(context).size.width /
-                          3, // Adjusted for three items
+                          2, // Adjusted for three items
                       color: Color.fromARGB(255, 8, 86, 11),
                     ),
                   ),
@@ -118,24 +114,33 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
             Expanded(
               child: BlocConsumer<CommandeCubit, CommandeState>(
-                listener: (context, state) {
-                  if (state is CommandeError) {
-                    // Show a SnackBar or other side effects when there's an error
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.error)),
+                  listener: (context, state) {
+                if (state is CommandeError) {
+                  // Show a SnackBar or other side effects when there's an error
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(state.error)),
+                  );
+                }
+                if (state is CommandeStatusUpdateError) {
+                  // Show a SnackBar or other side effects when there's an error
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(state.message)),
+                  );
+                }
+              }, builder: (context, state) {
+                if (state is CommandeLoading) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (state is CommandeLoaded) {
+                  if (state.commandes.isEmpty) {
+                    // Display 'No commands' message if the list is empty
+                    return Center(
+                      child: Text(
+                        'No commands',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
                     );
-                  }
-                  if (state is CommandeStatusUpdateError) {
-                    // Show a SnackBar or other side effects when there's an error
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message)),
-                    );
-                  }
-                },
-                builder: (context, state) {
-                  if (state is CommandeLoading) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (state is CommandeLoaded) {
+                  } else {
                     return ListView.builder(
                       itemCount: state.commandes.length,
                       itemBuilder: (context, index) {
@@ -183,9 +188,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                               child: Text(
                                                 commande['client_id'],
                                                 style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.black),
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
                                               ),
                                             ),
                                             Spacer(),
@@ -212,8 +218,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                         Text(
                                           'Status: ${commande['status']}',
                                           style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black),
+                                            fontSize: 16,
+                                            color: Colors.black,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -229,11 +236,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         );
                       },
                     );
-                  } else {
-                    return Center(child: Text('No notifications found.'));
                   }
-                },
-              ),
+                } else {
+                  return Center(child: Text('No notifications found.'));
+                }
+              }),
             ),
           ],
         ),

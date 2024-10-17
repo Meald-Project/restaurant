@@ -1,6 +1,6 @@
 {
-    "name": "meald",
-    "short_name": "meald",
+    "name": "mealed_project",
+    "short_name": "mealed_project",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

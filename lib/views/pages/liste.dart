@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'footer.dart';
 
 class Liste extends StatefulWidget {
   const Liste({Key? key}) : super(key: key);
@@ -34,10 +33,12 @@ class _ListeState extends State<Liste> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                title: Text(_isInStock ? 'Hors Stock' : 'En Stock'), // Update the text based on stock status
+                title: Text(_isInStock
+                    ? 'Hors Stock'
+                    : 'En Stock'), // Update the text based on stock status
                 onTap: () {
                   _toggleStockStatus();
-                  Navigator.pop(context); 
+                  Navigator.pop(context);
                 },
               ),
               ListTile(
@@ -63,6 +64,8 @@ class _ListeState extends State<Liste> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: true,
         title: const Text("Ma Liste"),
       ),
       body: Column(
@@ -107,7 +110,6 @@ class _ListeState extends State<Liste> {
               ),
             ),
           ),
-          Footer(), // Place the footer after the scrollable content
         ],
       ),
     );
@@ -124,7 +126,9 @@ class _ListeState extends State<Liste> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: isSelected ? const Color.fromARGB(255, 8, 86, 11) : Colors.grey,
+              color: isSelected
+                  ? const Color.fromARGB(255, 8, 86, 11)
+                  : Colors.grey,
             ),
           ),
         ],
@@ -132,121 +136,123 @@ class _ListeState extends State<Liste> {
     );
   }
 
-Widget _detailArticle() {
-  return GestureDetector(
-    onLongPress: () => _showPopupMenu(context),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 20),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            children: [
-              Container(
-                width: 150,
-                height: 120,
-                decoration: BoxDecoration(
-                  color: const Color.fromRGBO(240, 245, 250, 1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(15.0),
-                    child: Image(
-                      image: AssetImage("assets/addpic.png"),
-                      width: 40,
-                      height: 40,
+  Widget _detailArticle() {
+    return GestureDetector(
+      onLongPress: () => _showPopupMenu(context),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              children: [
+                Container(
+                  width: 150,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: const Color.fromRGBO(240, 245, 250, 1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(15.0),
+                      child: Image(
+                        image: AssetImage("assets/addpic.png"),
+                        width: 40,
+                        height: 40,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 15),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Expanded(
-                          child: Text(
-                            "Nom de l'article",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          height: 35,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: const Color.fromARGB(48, 3, 255, 62),
-                          ),
-                          child: const Center(
+                const SizedBox(width: 15),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Expanded(
                             child: Text(
-                              "Categorie",
+                              "Nom de l'article",
                               style: TextStyle(
-                                color: Color.fromARGB(255, 8, 86, 11),
-                                fontSize: 14,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
-                        ),
-                        const Spacer(),
-                        const Text(
-                          "\$19.99",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 8, 86, 11),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            height: 35,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: const Color.fromARGB(48, 3, 255, 62),
+                            ),
+                            child: const Center(
+                              child: Text(
+                                "Categorie",
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 8, 86, 11),
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 15),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.star,
-                          color: const Color.fromARGB(255, 8, 86, 11),
-                          size: 18,
-                        ),
-                        const SizedBox(width: 5),
-                        const Text(
-                          "4.9",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color.fromARGB(255, 8, 86, 11),
+                          const Spacer(),
+                          const Text(
+                            "\$19.99",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 8, 86, 11),
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          _isInStock ? 'En Stock' : 'Hors Stock',  // Display stock status here
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
+                        ],
+                      ),
+                      const SizedBox(height: 15),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.star,
+                            color: const Color.fromARGB(255, 8, 86, 11),
+                            size: 18,
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          const SizedBox(width: 5),
+                          const Text(
+                            "4.9",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Color.fromARGB(255, 8, 86, 11),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            _isInStock
+                                ? 'En Stock'
+                                : 'Hors Stock', // Display stock status here
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   double _selectedCategoryPosition(BuildContext context) {
     switch (_selectedCategory) {

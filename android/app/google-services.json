@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "245592174525",
+    "project_id": "meald-36439",
+    "storage_bucket": "meald-36439.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245592174525:android:4261c7e60acbf9a06dacd4",
+        "android_client_info": {
+          "package_name": "com.example.mealed_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAXjo724YOt7QJ9FtunQ6LCbGJ2gLtTsk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

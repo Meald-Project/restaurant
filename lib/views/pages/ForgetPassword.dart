@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meald/viewmodels/login_view_model.dart';
-import 'package:meald/viewmodels/user_view_model.dart';
+
 
 class ForgetPassword extends StatefulWidget {
   const ForgetPassword({Key? key}) : super(key: key);
@@ -10,15 +9,14 @@ class ForgetPassword extends StatefulWidget {
 }
 
 class _ForgetPasswordState extends State<ForgetPassword> {
-  late final LoginViewModel viewModel;
+
   bool codeSent = false;
   String enteredEmailOrPhone = "";
 
   @override
   void initState() {
     super.initState();
-    final userViewModel = UserViewModel();
-    viewModel = LoginViewModel(userViewModel: userViewModel);
+    
   }
 
   Widget _button() {
@@ -34,7 +32,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
         onPressed: () {
           setState(() {
             codeSent = true;
-            enteredEmailOrPhone = viewModel.emailController.text;
+          //  enteredEmailOrPhone = viewModel.emailController.text;
           });
         },
         child: Row(
@@ -141,7 +139,7 @@ class _ForgetPasswordState extends State<ForgetPassword> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: TextField(
-                    controller: viewModel.emailController,
+                   // controller: viewModel.emailController,
                     decoration: InputDecoration(
                       hintText: "Entrez votre email ou numero de telephone",
                       border: InputBorder.none,

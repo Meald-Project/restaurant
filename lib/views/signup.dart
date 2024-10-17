@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meald/viewmodels/signup_view_model.dart';
+
 
 class Signup extends StatefulWidget {
   const Signup({Key? key}) : super(key: key);
@@ -9,11 +9,11 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
-  final SignupViewModel viewModel = SignupViewModel();
+  
 
   @override
   void dispose() {
-    viewModel.dispose();
+  
     super.dispose();
   }
 
@@ -79,7 +79,7 @@ class _SignupState extends State<Signup> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: TextField(
-                    controller: viewModel.nameController,
+                    //controller: viewModel.nameController,
                     decoration: InputDecoration(
                       hintText: "Entez Votre Nom",
                       border: InputBorder.none,
@@ -105,7 +105,7 @@ class _SignupState extends State<Signup> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: TextField(
-                    controller: viewModel.emailController,
+                   // controller: viewModel.emailController,
                     decoration: InputDecoration(
                       hintText: "Entrez Votre email",
                       border: InputBorder.none,
@@ -131,7 +131,7 @@ class _SignupState extends State<Signup> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: TextField(
-                    controller: viewModel.passwordController,
+                   // controller: viewModel.passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
                       hintText: "Entrez Votre Mot De Passe",
@@ -158,7 +158,7 @@ class _SignupState extends State<Signup> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: TextField(
-                    controller: viewModel.confirmPasswordController,
+                  //  controller: viewModel.confirmPasswordController,
                     obscureText: true,
                     decoration: InputDecoration(
                       hintText: "Entrez Votre Mot De Passe",

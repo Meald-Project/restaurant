@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'footer.dart';
 
 class ArticleDetails extends StatefulWidget {
   const ArticleDetails({super.key});
@@ -142,7 +141,7 @@ class _ArticleDetailsState extends State<ArticleDetails> {
               ),
             ),
           ),
-          Footer(),
+          
         ],
       ),
     );

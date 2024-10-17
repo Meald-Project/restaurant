@@ -1,392 +1,330 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'footer.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:meald/views/pages/profile_resto.dart';
 
+import '../../cubit/article/article_cubit.dart'; // For picking images
 
+class CreateArticlePage extends StatefulWidget {
+  final String restaurantName;
+  final String selectedCategory;
 
-class CreationDArticle extends StatefulWidget {
-  const CreationDArticle({Key? key}) : super(key: key);
+  const CreateArticlePage({
+    Key? key,
+    required this.restaurantName,
+    required this.selectedCategory,
+  }) : super(key: key);
 
   @override
-  _CreationDArticleState createState() => _CreationDArticleState();
+  _CreateArticlePageState createState() => _CreateArticlePageState();
 }
 
-class _CreationDArticleState extends State<CreationDArticle> {
-  List<String> _ingredients = [
-    'Tomato',
-    'Lettuce',
-    'Cheese',
-    'Bacon',
-    'Onion'
-  ];
-  List<String> _selectedIngredients = [];
-  List<String> _categories = ['Fast Food', 'Fine Dining', 'Cafe', 'Casual Dining'];
-  String? _selectedCategory;
-  bool _isPopupVisible = false;
+class _CreateArticlePageState extends State<CreateArticlePage> {
+  // TextEditingControllers for article fields
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
+  final box = GetStorage();
+  bool isloading = false;
 
-  void _togglePopupVisibility() {
+  // Variables for dynamically added fields
+  List<TextEditingController> _ingredientControllers = [];
+  List<TextEditingController> _sizeControllers = [];
+
+  // For storing image file
+  File? _articleImage;
+  final ImagePicker _picker = ImagePicker();
+
+  // Method to add new ingredient field
+  void _addIngredientField() {
     setState(() {
-      _isPopupVisible = !_isPopupVisible;
+      _ingredientControllers.add(TextEditingController());
     });
   }
 
-  void _toggleIngredient(String ingredient) {
+  // Method to remove ingredient field
+  void _removeIngredientField(int index) {
     setState(() {
-      if (_selectedIngredients.contains(ingredient)) {
-        _selectedIngredients.remove(ingredient);
-      } else {
-        _selectedIngredients.add(ingredient);
-      }
+      _ingredientControllers.removeAt(index);
     });
   }
 
-  void _addNewIngredient(String name) {
-    if (name.isNotEmpty) {
+  // Method to add new size field
+  void _addSizeField() {
+    setState(() {
+      _sizeControllers.add(TextEditingController());
+    });
+  }
+
+  // Method to remove size field
+  void _removeSizeField(int index) {
+    setState(() {
+      _sizeControllers.removeAt(index);
+    });
+  }
+
+  // Method to pick image
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
       setState(() {
-        _ingredients.add(name);
+        _articleImage = File(pickedFile.path);
       });
     }
-    Navigator.pop(context);
   }
 
-Widget _button(double width) {
- return ElevatedButton(
-    onPressed: () {
-      // Add your button logic here
-    },
-    style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.green, // Button color
-      minimumSize: Size(width, 50), // Button width and height
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-    ),
-    child: Text(
-      'Submit', // Button text
-      style: TextStyle(color: Colors.white, fontSize: 18),
-    ),
-  );
-}
+  // Logic for saving the article
+  void _saveArticle() {
+    // Collect all data
+    String name = _nameController.text;
+    String description = _descriptionController.text;
+    double price = double.tryParse(_priceController.text) ?? 0.0;
 
-Widget _input(double width) {
-  return Container(
-    width: width,
-    decoration: BoxDecoration(
-      color: Color.fromRGBO(240, 245, 250, 1),
-      borderRadius: BorderRadius.circular(10),
-    ),
-    child: TextField(
-      decoration: InputDecoration(
-        border: InputBorder.none,
-        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-        hintText: 'Enter text here', // Placeholder text
-      ),
-    ),
-  );
-}
+    List<String> ingredients =
+        _ingredientControllers.map((controller) => controller.text).toList();
+    List<String> sizes =
+        _sizeControllers.map((controller) => controller.text).toList();
 
+    // Here you can add the logic to save the article (e.g., send to the server or save locally)
+    print("Article Name: $name");
+    print("Description: $description");
+    print("Price: $price");
+    print("Ingredients: $ingredients");
+    print("Sizes: $sizes");
+    print("Image Path: ${_articleImage?.path}");
 
-  Widget _ingredientCarousel() {
-  return Container(
-    height: 100, // Increased height to accommodate both icon and text
-    child: ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: _selectedIngredients.length + 1,
-      itemBuilder: (context, index) {
-        if (index == _selectedIngredients.length) {
-          return GestureDetector(
-            onTap: _togglePopupVisibility,
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 10),
-              width: 70, // Adjusted width for better layout
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: Icon(Icons.add, color: Colors.white),
-                  ),
-                  SizedBox(height: 5), // Spacing between icon and text
-                  Text(
-                    'Add Ingredient',
-                    style: TextStyle(color: Colors.black54, fontSize: 12), // Adjusted text style
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-        return Container(
-          margin: EdgeInsets.symmetric(horizontal: 5),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.fastfood, // Placeholder icon, use an appropriate one for ingredients
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              SizedBox(height: 5), // Spacing between icon and text
-              Text(
-                _selectedIngredients[index],
-                style: TextStyle(color: Colors.black, fontSize: 12),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+    // Call the addArticle method from ArticleCubit
+    context.read<ArticleCubit>().addArticle(
+          restaurantName: widget.restaurantName,
+          category: widget.selectedCategory,
+          name: name,
+          description: description,
+          price: price,
+          ingredients: ingredients,
+          sizes: sizes,
+          image: _articleImage,
+          restaurant_id:
+              box.read("userId"), // Optional: if the user selected an image
         );
-      },
-    ),
-  );
-}
+    // Clear the form after saving
+    //_clearForm();
+  }
 
-  Widget _ingredientPopup() {
-    return AlertDialog(
-      title: Text('Select Ingredients'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: _ingredients.map((ingredient) {
-              return ChoiceChip(
-                label: Text(ingredient),
-                selected: _selectedIngredients.contains(ingredient),
-                onSelected: (selected) => _toggleIngredient(ingredient),
-                backgroundColor: Colors.green.withOpacity(0.2),
-                selectedColor: Colors.green,
-                labelStyle: TextStyle(
-                  color: _selectedIngredients.contains(ingredient) ? Colors.white : Colors.black,
-                ),
-              );
-            }).toList(),
-          ),
-          SizedBox(height: 10),
-          GestureDetector(
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: Text('Add New Ingredient'),
-                    content: TextField(
-                      onSubmitted: _addNewIngredient,
-                      decoration: InputDecoration(hintText: 'Ingredient Name'),
-                    ),
-                    actions: [
-  Row(
-    mainAxisAlignment: MainAxisAlignment.spaceEvenly, 
-    children: [
-      TextButton(
-        onPressed: () => Navigator.pop(context),
-        child: Text('Annuler'),
-      ),
-      TextButton(
-        onPressed: () => Navigator.pop(context),
-        child: Text('Terminé'),
-      ),
-    ],
-  )
-],
-                  );
-                },
-              );
-            },
-            child: Container(
-              margin: EdgeInsets.only(top: 10),
-              padding: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Icon(Icons.add, color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            setState(() {
-              _isPopupVisible = false;
-            });
-          },
-          child: Text('Confirm'),
-        ),
-      ],
-    );
+  // Method to clear form after saving
+  void _clearForm() {
+    _nameController.clear();
+    _descriptionController.clear();
+    _priceController.clear();
+    _ingredientControllers.clear();
+    _sizeControllers.clear();
+    setState(() {
+      _articleImage = null;
+    });
+  }
+
+  @override
+  void initState() {
+    // Debug output to verify received parameters
+    print(widget.restaurantName);
+    print(widget.selectedCategory);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double containerWidth = screenWidth * 0.4;
-    final double containerHeight = 120;
-    final double iconSize = 45;
-    final double buttonWidth = screenWidth * 0.6;
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Création d\'un Nouveau Article'),
+        title: Text("Create Article"),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 20),
-Text(
-                "Ajouter la categorie :",
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-              SizedBox(height: 10),
-              Container(
-                width: double.infinity,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(240, 245, 250, 1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: DropdownButton<String>(
-                    value: _selectedCategory,
-                    hint: Text("Sélectionner une catégorie"),
-                    icon: Icon(Icons.arrow_downward),
-                    iconSize: 24,
-                    underline: SizedBox(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedCategory = newValue;
-                      });
-                    },
-                    items: _categories.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              Text(
-                "Nom de votre Article * :",
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-              SizedBox(height: 10),
-              _input(double.infinity),
-              SizedBox(height: 20),
-              Text(
-                "Ajouter des images *:",
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-              SizedBox(height: 20),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _addimg(containerWidth, containerHeight, iconSize),
-                    SizedBox(width: 10),
-                    _addimg(containerWidth, containerHeight, iconSize),
-                    SizedBox(width: 10),
-                    _addimg(containerWidth, containerHeight, iconSize),
-                  ],
-                ),
-              ),
-              SizedBox(height: 20),
-              Text(
-                "Ajouter le Prix *:",
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-              SizedBox(height: 10),
-              _input(double.infinity),
-              SizedBox(height: 20),
-                            Text(
-                "Ajouter les ingrédients * :",
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-              SizedBox(height: 10),
-              _ingredientCarousel(),
-              SizedBox(height: 20),
-              Text(
-                "Détails * :",
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-              SizedBox(height: 20),
-              Container(
-                width: double.infinity,
-                height: 150,
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(240, 245, 250, 1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: TextField(
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              Center(
-                child: _button(buttonWidth),
-              ),
-              SizedBox(height: 30),
-              Footer(),
-            ],
-          ),
+        padding: const EdgeInsets.all(16.0),
+        child: BlocConsumer<ArticleCubit, ArticleState>(
+          listener: (context, state) {
+            if (state is AddArticleLoading) {
+              isloading = true;
+            } else if (state is AddArticleLoaded) {
+              isloading = false;
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => ProfileResto()),
+              );
+            } else if (state is AddArticleError) {
+              print("beeeeeeeeeeee5");
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  // Return an AlertDialog with a failure message
+                  return AlertDialog(
+                    title: Text('error'),
+                    content: Text(state.errorMessage.toString()),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('OK'),
+                      ),
+                    ],
+                  );
+                },
+              );
+
+              isloading = false;
+            }
+          },
+          builder: (context, state) {
+            return isloading == true
+                ? SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.2,
+                    child: const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(
+                              color: Color.fromRGBO(112, 74, 209, 1)),
+                        ],
+                      ),
+                    ),
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Add a new article to ${widget.selectedCategory} for ${widget.restaurantName}',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 16),
+                      // Image picker
+                      Text(
+                        'Image',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      _articleImage != null
+                          ? Image.file(
+                              _articleImage!,
+                              height: 200,
+                            )
+                          : Text('No image selected.'),
+                      ElevatedButton(
+                        onPressed: _pickImage,
+                        child: Text('Pick Image'),
+                      ),
+                      SizedBox(height: 16),
+                      TextField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          labelText: 'Article Name',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      TextField(
+                        controller: _descriptionController,
+                        decoration: InputDecoration(
+                          labelText: 'Article Description',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      TextField(
+                        controller: _priceController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: 'Price',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+
+                      // Dynamic ingredient fields
+                      Text(
+                        'Ingredients',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      ..._ingredientControllers.asMap().entries.map((entry) {
+                        int index = entry.key;
+                        TextEditingController controller = entry.value;
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: TextField(
+                                  controller: controller,
+                                  decoration: InputDecoration(
+                                    labelText: 'Ingredient',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon:
+                                  Icon(Icons.remove_circle, color: Colors.red),
+                              onPressed: () => _removeIngredientField(index),
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                      ElevatedButton(
+                        onPressed: _addIngredientField,
+                        child: Text('Add Ingredient'),
+                      ),
+                      SizedBox(height: 16),
+
+                      // Dynamic size fields
+                      Text(
+                        'Sizes',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      ..._sizeControllers.asMap().entries.map((entry) {
+                        int index = entry.key;
+                        TextEditingController controller = entry.value;
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: TextField(
+                                  controller: controller,
+                                  decoration: InputDecoration(
+                                    labelText: 'Size',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon:
+                                  Icon(Icons.remove_circle, color: Colors.red),
+                              onPressed: () => _removeSizeField(index),
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                      ElevatedButton(
+                        onPressed: _addSizeField,
+                        child: Text('Add Size'),
+                      ),
+                      SizedBox(height: 16),
+
+                      // Save button
+                      ElevatedButton(
+                        onPressed: _saveArticle,
+                        child: Text('Save Article'),
+                      ),
+                    ],
+                  );
+          },
         ),
       ),
-      // Show the popup if needed
-      persistentFooterButtons: _isPopupVisible
-          ? [SizedBox.expand(child: _ingredientPopup())]
-          : [],
     );
   }
 }
-
-Widget _addimg(double width, double height, double iconSize) {
-  return Container(
-    width: width,
-    height: height,
-    decoration: BoxDecoration(
-      color: Colors.grey[300],
-      borderRadius: BorderRadius.circular(10),
-    ),
-    child: Center(
-      child: Icon(
-        Icons.add_a_photo,
-        size: iconSize,
-        color: Colors.grey[600],
-      ),
-    ),
-  );}
