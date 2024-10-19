@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:meta/meta.dart';
 
 part 'login_state.dart';
 
@@ -35,6 +35,16 @@ class LoginCubit extends Cubit<LoginState> {
         await FirebaseAuth.instance.signOut();
         emit(LoginFailure(error: 'Restaurant for this user does not exist.'));
         print('Restaurant not found for user ID: $userId');
+        return;
+      }
+      // Check if the user is activated
+      final isActivated = restaurantDoc['isActivated'] ?? false;
+
+      if (!isActivated) {
+        // If the user is not activated, sign out and emit failure
+        await FirebaseAuth.instance.signOut();
+        emit(LoginFailure(error: 'Your account is not activated.'));
+        print('User with ID $userId is not activated.');
         return;
       }
 

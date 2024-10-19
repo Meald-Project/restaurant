@@ -118,24 +118,33 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
             Expanded(
               child: BlocConsumer<CommandeCubit, CommandeState>(
-                listener: (context, state) {
-                  if (state is CommandeError) {
-                    // Show a SnackBar or other side effects when there's an error
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.error)),
+                  listener: (context, state) {
+                if (state is CommandeError) {
+                  // Show a SnackBar or other side effects when there's an error
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(state.error)),
+                  );
+                }
+                if (state is CommandeStatusUpdateError) {
+                  // Show a SnackBar or other side effects when there's an error
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(state.message)),
+                  );
+                }
+              }, builder: (context, state) {
+                if (state is CommandeLoading) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (state is CommandeLoaded) {
+                  if (state.commandes.isEmpty) {
+                    // Display 'No commands' message if the list is empty
+                    return Center(
+                      child: Text(
+                        'No commands',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
                     );
-                  }
-                  if (state is CommandeStatusUpdateError) {
-                    // Show a SnackBar or other side effects when there's an error
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message)),
-                    );
-                  }
-                },
-                builder: (context, state) {
-                  if (state is CommandeLoading) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (state is CommandeLoaded) {
+                  } else {
                     return ListView.builder(
                       itemCount: state.commandes.length,
                       itemBuilder: (context, index) {
@@ -183,37 +192,43 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                               child: Text(
                                                 commande['client_id'],
                                                 style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.black),
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
                                               ),
                                             ),
                                             Spacer(),
-                                            IconButton(
-                                              onPressed: () {
-                                                // Handle check button press
-                                                final currentStatus =
-                                                    commande['status'];
-                                                BlocProvider.of<CommandeCubit>(
-                                                        context)
-                                                    .updateCommandeStatus(
-                                                        commande['id'],
-                                                        currentStatus);
-                                                print(
-                                                    "Checked: ${commande['client_id']}");
-                                              },
-                                              icon: Icon(
-                                                  Icons.check_circle_outline,
-                                                  color: Colors.green),
-                                            )
+                                            (commande['status'] == 4)
+                                                ? SizedBox()
+                                                : IconButton(
+                                                    onPressed: () {
+                                                      // Handle check button press
+                                                      final currentStatus =
+                                                          commande['status'];
+                                                      BlocProvider.of<
+                                                                  CommandeCubit>(
+                                                              context)
+                                                          .updateCommandeStatus(
+                                                              commande['id'],
+                                                              currentStatus);
+                                                      print(
+                                                          "Checked: ${commande['client_id']}");
+                                                    },
+                                                    icon: Icon(
+                                                        Icons
+                                                            .check_circle_outline,
+                                                        color: Colors.green),
+                                                  )
                                           ],
                                         ),
                                         SizedBox(height: 4),
                                         Text(
                                           'Status: ${commande['status']}',
                                           style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black),
+                                            fontSize: 16,
+                                            color: Colors.black,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -229,11 +244,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         );
                       },
                     );
-                  } else {
-                    return Center(child: Text('No notifications found.'));
                   }
-                },
-              ),
+                } else {
+                  return Center(child: Text('No notifications found.'));
+                }
+              }),
             ),
           ],
         ),

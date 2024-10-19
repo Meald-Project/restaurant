@@ -195,23 +195,27 @@ class _LivreurCommandePageState extends State<LivreurCommandePage> {
                                               ),
                                             ),
                                             Spacer(),
-                                            IconButton(
-                                              onPressed: () {
-                                                // Handle check button press
-                                                final currentStatus =
-                                                    commande['status'];
-                                                BlocProvider.of<CommandeCubit>(
-                                                        context)
-                                                    .updateCommandeStatus(
-                                                        commande['id'],
-                                                        currentStatus);
-                                                print(
-                                                    "Checked: ${commande['client_id']}");
-                                              },
-                                              icon: Icon(
-                                                  Icons.check_circle_outline,
-                                                  color: Colors.green),
-                                            )
+                                            (commande['status'] == 4)
+                                                ? SizedBox()
+                                                : IconButton(
+                                                    onPressed: () {
+                                                      // Handle check button press
+                                                      final currentStatus =
+                                                          commande['status'];
+                                                      BlocProvider.of<
+                                                                  CommandeCubit>(
+                                                              context)
+                                                          .updateCommandeStatus(
+                                                              commande['id'],
+                                                              currentStatus);
+                                                      print(
+                                                          "Checked: ${commande['client_id']}");
+                                                    },
+                                                    icon: Icon(
+                                                        Icons
+                                                            .check_circle_outline,
+                                                        color: Colors.green),
+                                                  )
                                           ],
                                         ),
                                         SizedBox(height: 4),

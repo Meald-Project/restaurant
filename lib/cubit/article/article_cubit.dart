@@ -123,49 +123,5 @@ class ArticleCubit extends Cubit<ArticleState> {
     }
   }
 
-  /*  Future<String> _uploadImageToFirebase(File image) async {
-    try {
-      // Create a reference to the Firebase Storage folder
-      print("Start uploading the image.");
-
-      Reference storageReference =
-          _storage.ref().child('articles/${image.path.split('/').last}');
-      print(storageReference);
-      // Initiate file upload and await the result
-      UploadTask uploadTask = storageReference.putFile(image);
-      // print(uploadTask.snapshot);
-      uploadTask.snapshotEvents.listen((event) {
-        switch (event.state) {
-          case TaskState.running:
-            print('Upload is running');
-            break;
-          case TaskState.paused:
-            print('Upload is paused');
-            break;
-          case TaskState.success:
-            print('Upload is complete');
-            break;
-          case TaskState.canceled:
-            print('Upload was canceled');
-            break;
-          case TaskState.error:
-            print('A error happened: ${state.toString()}');
-            break;
-        }
-      });
-      // Wait until the task is complete
-      TaskSnapshot snapshot = await uploadTask.whenComplete(() {
-        print("Upload complete.");
-      });
-
-      // Get the download URL after successful upload
-      String downloadUrl = await snapshot.ref.getDownloadURL();
-      print("Download URL: $downloadUrl");
-
-      return downloadUrl; // Return the image download URL
-    } on FirebaseException catch (e) {
-      print("Image upload failed: ${e.toString()}");
-      throw Exception('Image upload failed: ${e.toString()}');
-    }
-  } */
+  
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'pages/creation_de_restaurant.dart';
 
 class Signup extends StatefulWidget {
   const Signup({Key? key}) : super(key: key);
@@ -9,12 +10,31 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
-  
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  bool isButtonEnabled = false;
 
   @override
   void dispose() {
-  
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  void _validateFields() {
+    setState(() {
+      isButtonEnabled = _nameController.text.isNotEmpty &&
+          _emailController.text.isNotEmpty &&
+          _passwordController.text.isNotEmpty &&
+          _confirmPasswordController.text.isNotEmpty &&
+          _passwordController.text == _confirmPasswordController.text;
+    });
   }
 
   Widget _button() {
@@ -23,13 +43,24 @@ class _SignupState extends State<Signup> {
       width: double.infinity,
       height: 50,
       decoration: BoxDecoration(
-        color: Colors.green,
+        color: isButtonEnabled ? Colors.green : Colors.grey,
         borderRadius: BorderRadius.circular(15),
       ),
       child: ElevatedButton(
-        onPressed: () {
-          Navigator.of(context).pushNamed('/Creatresto');
-        },
+        onPressed: isButtonEnabled
+            ? () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CreationDeRestaurant(
+                      name: _nameController.text,
+                      email: _emailController.text,
+                      password: _passwordController.text,
+                    ),
+                  ),
+                );
+              }
+            : null, // The button is disabled when isButtonEnabled is false
         child: Text(
           "S'inscrire",
           style: TextStyle(
@@ -79,13 +110,14 @@ class _SignupState extends State<Signup> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: TextField(
-                    //controller: viewModel.nameController,
+                    controller: _nameController,
                     decoration: InputDecoration(
                       hintText: "Entez Votre Nom",
                       border: InputBorder.none,
                       contentPadding:
                           EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                     ),
+                    onChanged: (value) => _validateFields(),
                   ),
                 ),
                 SizedBox(height: 10),
@@ -105,13 +137,14 @@ class _SignupState extends State<Signup> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: TextField(
-                   // controller: viewModel.emailController,
+                    controller: _emailController,
                     decoration: InputDecoration(
                       hintText: "Entrez Votre email",
                       border: InputBorder.none,
                       contentPadding:
                           EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                     ),
+                    onChanged: (value) => _validateFields(),
                   ),
                 ),
                 SizedBox(height: 10),
@@ -131,7 +164,7 @@ class _SignupState extends State<Signup> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: TextField(
-                   // controller: viewModel.passwordController,
+                    controller: _passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
                       hintText: "Entrez Votre Mot De Passe",
@@ -139,6 +172,7 @@ class _SignupState extends State<Signup> {
                       contentPadding:
                           EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                     ),
+                    onChanged: (value) => _validateFields(),
                   ),
                 ),
                 SizedBox(height: 10),
@@ -158,7 +192,7 @@ class _SignupState extends State<Signup> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: TextField(
-                  //  controller: viewModel.confirmPasswordController,
+                    controller: _confirmPasswordController,
                     obscureText: true,
                     decoration: InputDecoration(
                       hintText: "Entrez Votre Mot De Passe",
@@ -166,6 +200,7 @@ class _SignupState extends State<Signup> {
                       contentPadding:
                           EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                     ),
+                    onChanged: (value) => _validateFields(),
                   ),
                 ),
                 SizedBox(height: 20),
