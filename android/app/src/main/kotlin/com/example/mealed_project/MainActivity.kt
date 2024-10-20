@@ -1,4 +1,4 @@
-package com.example.meald
+package com.example.mealed_project
 
 import io.flutter.embedding.android.FlutterActivity
 
